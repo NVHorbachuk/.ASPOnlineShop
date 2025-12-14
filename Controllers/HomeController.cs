@@ -1,21 +1,32 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore; 
+using OnlineShop.Data;
 using OnlineShop.Models;
+using System.Diagnostics;
 
 namespace OnlineShop.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly AppDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+      
+        public HomeController(AppDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+       
+        public IActionResult Index(string searchString)
         {
-            return View();
+            var products = _context.Products.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                products = products.Where(p => p.Name.Contains(searchString));
+            }
+
+            return View(products.ToList());
         }
 
         public IActionResult Privacy()

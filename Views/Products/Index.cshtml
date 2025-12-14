@@ -1,0 +1,33 @@
+﻿@model IEnumerable<OnlineShop.Models.Product>
+
+@{
+    ViewData["Title"] = "Exclusive Watches";
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-5 display-4">Exclusive Timepieces</h2>
+
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-lg">
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                        <span class="text-muted h1" style="font-size: 5rem;">⌚</span>
+                    </div>
+                    
+                    <div class="card-body text-center">
+                        <h5 class="card-title font-weight-bold">@product.Name</h5>
+                        <p class="card-text text-uppercase text-muted small">@product.Category</p>
+                        
+                        <h3 class="text-dark my-3">
+                            € @product.Price.ToString("N0")
+                        </h3>
+                        
+                        <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-dark btn-lg px-4 mt-2">Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
