@@ -26,3 +26,12 @@ body {
     background-attachment: fixed;
     background-color: #f0f2f5;
 }
+
+.container main {
+    background-color: rgba(255, 255, 255, 0.85); /* Білий колір, 85% непр
+    padding: 30px; /* Внутрішні відступи, щоб текст не лип до країв */
+    border-radius: 15px; /* Заокруглені кути */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5); /* Тінь, щоб відділити блок від фону */
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

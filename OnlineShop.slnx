@@ -1,3 +1,6 @@
 <Solution>
+  <Folder Name="/Helpers/">
+    <File Path="SessionExtensions.cs" />
+  </Folder>
   <Project Path="SeedData.cs.csproj" />
 </Solution>

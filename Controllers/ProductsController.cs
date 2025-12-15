@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OnlineShop.Data;
+using OnlineShop.DATA;
 using OnlineShop.Models;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OnlineShop.Controllers
 {
@@ -14,54 +17,97 @@ namespace OnlineShop.Controllers
             _context = context;
         }
 
-       
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Index()
         {
-            if (id == null) return NotFound();
-            var product = _context.Products.FirstOrDefault(m => m.Id == id);
-            if (product == null) return NotFound();
+            return View(await _context.Products.ToListAsync());
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.Products
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
             return View(product);
         }
 
-        
         public IActionResult Create()
         {
             return View();
         }
 
-        
         [HttpPost]
-        public IActionResult Create(Product product)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Product product)
         {
             if (ModelState.IsValid)
             {
-                _context.Products.Add(product);
-                _context.SaveChanges();
-                return RedirectToAction("Index", "Home"); 
+                _context.Add(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
             return View(product);
         }
 
-        
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
-            var product = _context.Products.Find(id);
-            if (product == null) return NotFound();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
             return View(product);
         }
 
-        
         [HttpPost]
-        public IActionResult Edit(Product product)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Product product)
         {
+            if (id != product.Id)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
-                _context.Products.Update(product);
-                _context.SaveChanges();
-                return RedirectToAction("Index", "Home");
+                try
+                {
+                    _context.Update(product);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ProductExists(product.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
             }
             return View(product);
+        }
+
+        private bool ProductExists(int id)
+        {
+            return _context.Products.Any(e => e.Id == id);
         }
     }
 }

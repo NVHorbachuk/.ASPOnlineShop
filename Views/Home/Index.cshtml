@@ -4,7 +4,7 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center py-5 bg-light mb-5">
+<div class="text-center py-5 mb-5" style="background-color: rgba(255,255,255, 0.8); border-radius: 10px;">
     <h1 class="display-4 font-weight-bold">Luxury Watch Shop</h1>
     <p class="lead text-muted">Час — це єдиний справжній скарб.</p>
 </div>
@@ -13,13 +13,13 @@
     <div class="row justify-content-center mb-5">
         <div class="col-md-8">
             <form asp-controller="Home" asp-action="Index" method="get">
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg shadow-sm">
                     <input type="text" name="searchString" class="form-control" placeholder="Введіть назву годинника..." />
-                    
+
                     <button class="btn btn-dark" type="submit">🔍 Пошук</button>
-                    
+
                     <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Скинути</a>
-                    
+
                     <a asp-controller="Products" asp-action="Create" class="btn btn-success ms-2">➕ Додати</a>
                 </div>
             </form>
@@ -29,31 +29,48 @@
     <div class="row">
         @if (!Model.Any())
         {
-            <div class="col-12 text-center">
-                <p class="text-muted">Товарів не знайдено.</p>
+            <div class="col-12 text-center" style="background-color: rgba(255,255,255, 0.8); padding: 20px; border-radius: 10px;">
+                <h3 class="text-muted">Товарів не знайдено.</h3>
             </div>
         }
-        
+
         @foreach (var product in Model)
         {
             <div class="col-md-4 mb-4">
-                <div class="card h-100 border-0 shadow-lg">
-                    <div class="card-img-top bg-white d-flex align-items-center justify-content-center" style="height: 250px;">
-                        <span class="text-dark display-1">⌚</span>
+                <div class="card h-100 border-0 shadow-lg" style="overflow: hidden;">
+
+                    <div class="card-img-top bg-white d-flex align-items-center justify-content-center" style="height: 300px; padding: 20px;">
+                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" alt="@product.Name" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+                        }
+                        else
+                        {
+                            <span class="text-dark display-1">⌚</span>
+                        }
                     </div>
-                    
-                    <div class="card-body text-center">
-                        <h5 class="card-title font-weight-bold">@product.Name</h5>
-                        <p class="card-text text-uppercase text-muted small">@product.Category</p>
-                        
-                        <h3 class="text-dark my-3">
-                            € @product.Price.ToString("N0")
-                        </h3>
-                        
-                        <div class="d-flex justify-content-center gap-2">
-                            <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="btn btn-dark btn-sm">Деталі</a>
-                            
-                            <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-outline-primary btn-sm">Edit</a>
+
+                    <div class="card-body text-center d-flex flex-column justify-content-between">
+                        <div>
+                            <h5 class="card-title font-weight-bold">@product.Name</h5>
+                            <p class="card-text text-uppercase text-muted small">@product.Category</p>
+                        </div>
+
+                        <div>
+                            <h3 class="text-dark my-3">
+                                @product.Price.ToString("C0")
+                            </h3>
+
+                            <div class="d-grid gap-2">
+                                <a asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id" class="btn btn-warning font-weight-bold">
+                                    🛒 У кошик
+                                </a>
+
+                                <div class="btn-group">
+                                    <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="btn btn-dark btn-sm">Деталі</a>
+                                    <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-outline-secondary btn-sm">Редагувати</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
