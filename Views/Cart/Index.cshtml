@@ -4,55 +4,69 @@
     ViewData["Title"] = "Кошик";
 }
 
-<h2>Ваш кошик</h2>
+<div class="container p-4" style="background-color: rgba(255,255,255,0.9); border-radius: 15px; margin-top: 20px;">
 
-@if (Model.Count > 0)
-{
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Ціна</th>
-                <th>Кількість</th>
-                <th>Сума</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    <h2>Ваш кошик</h2>
+
+    @if (Model.Count > 0)
+    {
+        <table class="table table-bordered table-striped mt-3">
+            <thead class="thead-dark">
                 <tr>
-                    <td>@item.Product.Name</td>
-                    <td>@item.Product.Price.ToString("c")</td>
-                    <td>@item.Quantity</td>
-                    <td>
-                        @((item.Quantity * item.Product.Price).ToString("c"))
-                    </td>
-                    <td>
-                        <a asp-action="Remove" asp-route-id="@item.Product.Id" class="btn btn-danger btn-sm">Видалити</a>
-                    </td>
+                    <th>Товар</th>
+                    <th>Ціна</th>
+                    <th>Кількість</th>
+                    <th>Сума</th>
+                    <th>Дії</th>
                 </tr>
-            }
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="3" class="text-right"><b>Всього:</b></td>
-                <td>
-                    <b>@Model.Sum(x => x.Quantity * x.Product.Price).ToString("c")</b>
-                </td>
-                <td></td>
-            </tr>
-        </tfoot>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="align-middle">@item.Product.Name</td>
+                        <td class="align-middle">@item.Product.Price.ToString("c")</td>
 
-    <div class="text-center">
-        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Продовжити покупки</a>
-        <a href="#" class="btn btn-success">Оформити замовлення</a>
-    </div>
-}
-else
-{
-    <div class="alert alert-info">
-        Ваш кошик порожній. <a asp-controller="Home" asp-action="Index">Перейти до товарів</a>
-    </div>
-}
+                        <td class="align-middle">
+                            <div class="btn-group" role="group">
+                                <a asp-action="Decrease" asp-route-id="@item.Product.Id" class="btn btn-outline-secondary btn-sm font-weight-bold">-</a>
+                                <span class="btn btn-light btn-sm disabled" style="color: black; font-weight: bold; width: 40px;">@item.Quantity</span>
+                                <a asp-action="Add" asp-route-id="@item.Product.Id" class="btn btn-outline-secondary btn-sm font-weight-bold">+</a>
+                            </div>
+                        </td>
+
+                        <td class="align-middle">
+                            @((item.Quantity * item.Product.Price).ToString("c"))
+                        </td>
+                        <td class="align-middle">
+                            <a asp-action="Remove" asp-route-id="@item.Product.Id" class="btn btn-danger btn-sm">Видалити</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end"><b>Всього до сплати:</b></td>
+                    <td>
+                        <b style="font-size: 1.2em;">@Model.Sum(x => x.Quantity * x.Product.Price).ToString("c")</b>
+                    </td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="text-center mt-4">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">⬅ Продовжити покупки</a>
+
+            <a asp-controller="Order" asp-action="Checkout" class="btn btn-success btn-lg">Оформити замовлення ✅</a>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <h4>Ваш кошик порожній 🛒</h4>
+            <p>Але це легко виправити!</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Перейти до товарів</a>
+        </div>
+    }
+</div>

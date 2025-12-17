@@ -1,75 +1,155 @@
 ﻿@model IEnumerable<OnlineShop.Models.Product>
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Каталог";
 }
 
-<div class="text-center py-5 mb-5" style="background-color: rgba(255,255,255, 0.8); border-radius: 10px;">
-    <h1 class="display-4 font-weight-bold">Luxury Watch Shop</h1>
-    <p class="lead text-muted">Час — це єдиний справжній скарб.</p>
+<style>
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        border-radius: 15px;
+        background-color: #fff; 
+        overflow: hidden;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+    
+    .card-img-wrapper {
+        height: 260px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: radial-gradient(circle, #f8f9fa 0%, #e9ecef 100%); 
+    }
+
+        .card-img-wrapper img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2)); 
+            transition: transform 0.5s ease;
+        }
+
+    .product-card:hover .card-img-wrapper img {
+        transform: scale(1.08);
+    }
+
+    
+    .hero-section {
+        background: rgba(0, 0, 0, 0.7); 
+        backdrop-filter: blur(8px); 
+        border-radius: 20px;
+        padding: 4rem 2rem;
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .search-input {
+        border: none;
+        padding: 15px 25px;
+        font-size: 1.1rem;
+    }
+
+        .search-input:focus {
+            box-shadow: none;
+        }
+
+    .gold-text {
+        color: #d4af37; 
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+</style>
+
+<div class="container mb-5">
+    <div class="hero-section text-center">
+        <h1 class="display-4 font-weight-bold text-uppercase mb-2" style="letter-spacing: 3px;">
+            Luxury <span class="gold-text">Timepieces</span>
+        </h1>
+        <p class="lead text-light opacity-75 mb-4" style="font-weight: 300;">Ваш час коштує того, щоб бути ідеальним.</p>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <form asp-controller="Home" asp-action="Index" method="get">
+                    <div class="input-group shadow-lg rounded-pill overflow-hidden">
+                        <input type="text" name="searchString" class="form-control search-input" placeholder="Знайти модель..." />
+                        <button class="btn btn-warning px-4 font-weight-bold text-uppercase" type="submit" style="background-color: #d4af37; border: none; color: #000;">
+                            Пошук
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-3 d-flex justify-content-center gap-2">
+                    <a asp-controller="Home" asp-action="Index" class="text-white text-decoration-none small opacity-75 hover-white me-3">
+                        ↻ Скинути фільтри
+                    </a>
+                    @if (!User.Identity.IsAuthenticated) 
+                    {
+                        <a asp-controller="Products" asp-action="Create" class="text-warning text-decoration-none small">
+                            + Додати товар
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="container">
-    <div class="row justify-content-center mb-5">
-        <div class="col-md-8">
-            <form asp-controller="Home" asp-action="Index" method="get">
-                <div class="input-group input-group-lg shadow-sm">
-                    <input type="text" name="searchString" class="form-control" placeholder="Введіть назву годинника..." />
-
-                    <button class="btn btn-dark" type="submit">🔍 Пошук</button>
-
-                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Скинути</a>
-
-                    <a asp-controller="Products" asp-action="Create" class="btn btn-success ms-2">➕ Додати</a>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <div class="row">
         @if (!Model.Any())
         {
-            <div class="col-12 text-center" style="background-color: rgba(255,255,255, 0.8); padding: 20px; border-radius: 10px;">
-                <h3 class="text-muted">Товарів не знайдено.</h3>
+            <div class="col-12 text-center py-5">
+                <div class="hero-section py-4">
+                    <h3 class="text-white">На жаль, нічого не знайдено 😔</h3>
+                    <a asp-action="Index" class="btn btn-outline-light mt-3 rounded-pill px-4">Показати весь каталог</a>
+                </div>
             </div>
         }
 
         @foreach (var product in Model)
         {
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 border-0 shadow-lg" style="overflow: hidden;">
+            <div class="col-md-6 col-lg-4 mb-5">
+                <div class="card product-card h-100">
 
-                    <div class="card-img-top bg-white d-flex align-items-center justify-content-center" style="height: 300px; padding: 20px;">
+                    <div class="card-img-wrapper position-relative">
                         @if (!string.IsNullOrEmpty(product.ImageUrl))
                         {
-                            <img src="@product.ImageUrl" alt="@product.Name" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+                            <img src="@product.ImageUrl" alt="@product.Name" />
                         }
                         else
                         {
-                            <span class="text-dark display-1">⌚</span>
+                            <span class="text-muted display-1">⌚</span>
                         }
+
+                        <div class="position-absolute top-0 end-0 m-3 bg-dark text-white px-3 py-1 rounded-pill shadow-sm">
+                            <span class="font-weight-bold">@product.Price.ToString("N0") €</span>
+                        </div>
                     </div>
 
-                    <div class="card-body text-center d-flex flex-column justify-content-between">
-                        <div>
-                            <h5 class="card-title font-weight-bold">@product.Name</h5>
-                            <p class="card-text text-uppercase text-muted small">@product.Category</p>
-                        </div>
+                    <div class="card-body text-center d-flex flex-column pt-4">
+                        <p class="text-uppercase text-muted small mb-1" style="letter-spacing: 1px;">@product.Category</p>
+                        <h5 class="card-title font-weight-bold text-dark mb-3">@product.Name</h5>
 
-                        <div>
-                            <h3 class="text-dark my-3">
-                                @product.Price.ToString("C0")
-                            </h3>
+                        <div class="mt-auto">
+                            <a asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id" class="btn btn-dark w-100 py-2 mb-3 rounded-pill shadow-sm text-uppercase" style="letter-spacing: 1px; font-size: 0.9rem;">
+                                В кошик
+                            </a>
 
-                            <div class="d-grid gap-2">
-                                <a asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id" class="btn btn-warning font-weight-bold">
-                                    🛒 У кошик
+                            <div class="d-flex justify-content-center gap-3">
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="text-secondary small text-decoration-none">
+                                    Детальніше
                                 </a>
-
-                                <div class="btn-group">
-                                    <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="btn btn-dark btn-sm">Деталі</a>
-                                    <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-outline-secondary btn-sm">Редагувати</a>
-                                </div>
+                                <span class="text-muted small">|</span>
+                                <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.Id" class="text-secondary small text-decoration-none">
+                                    Редагувати
+                                </a>
                             </div>
                         </div>
                     </div>
