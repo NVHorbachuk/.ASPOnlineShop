@@ -9,7 +9,7 @@
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         border: none;
         border-radius: 15px;
-        background-color: #fff; 
+        background-color: #fff;
         overflow: hidden;
     }
 
@@ -18,21 +18,21 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
 
-    
+
     .card-img-wrapper {
         height: 260px;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 20px;
-        background: radial-gradient(circle, #f8f9fa 0%, #e9ecef 100%); 
+        background: radial-gradient(circle, #f8f9fa 0%, #e9ecef 100%);
     }
 
         .card-img-wrapper img {
             max-height: 100%;
             max-width: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2)); 
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
             transition: transform 0.5s ease;
         }
 
@@ -40,10 +40,10 @@
         transform: scale(1.08);
     }
 
-    
+
     .hero-section {
-        background: rgba(0, 0, 0, 0.7); 
-        backdrop-filter: blur(8px); 
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
         border-radius: 20px;
         padding: 4rem 2rem;
         color: white;
@@ -62,7 +62,7 @@
         }
 
     .gold-text {
-        color: #d4af37; 
+        color: #d4af37;
         text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
 </style>
@@ -89,7 +89,7 @@
                     <a asp-controller="Home" asp-action="Index" class="text-white text-decoration-none small opacity-75 hover-white me-3">
                         ↻ Скинути фільтри
                     </a>
-                    @if (!User.Identity.IsAuthenticated) 
+                    @if (!User.Identity.IsAuthenticated)
                     {
                         <a asp-controller="Products" asp-action="Create" class="text-warning text-decoration-none small">
                             + Додати товар
@@ -138,10 +138,11 @@
                         <h5 class="card-title font-weight-bold text-dark mb-3">@product.Name</h5>
 
                         <div class="mt-auto">
-                            <a asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id" class="btn btn-dark w-100 py-2 mb-3 rounded-pill shadow-sm text-uppercase" style="letter-spacing: 1px; font-size: 0.9rem;">
-                                В кошик
-                            </a>
-
+                            <form asp-controller="Cart" asp-action="Add" asp-route-id="@product.Id" method="post">
+                                <button type="submit" class="btn btn-dark w-100 py-2 mb-3 rounded-pill shadow-sm text-uppercase" style="letter-spacing: 1px; font-size: 0.9rem;">
+                                    В кошик
+                                </button>
+                            </form>
                             <div class="d-flex justify-content-center gap-3">
                                 <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="text-secondary small text-decoration-none">
                                     Детальніше

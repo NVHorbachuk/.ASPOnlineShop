@@ -1,68 +1,63 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OnlineShop.Data;
-using OnlineShop.DATA;      
-using OnlineShop.Helpers;    
-using OnlineShop.Models;     
+using OnlineShop.Models;
+using OnlineShop.Services;
+using OnlineShop.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace OnlineShop.Controllers
 {
     public class CartController : Controller
     {
+        private readonly ICartService _cartService;
         private readonly AppDbContext _context;
 
-        public CartController(AppDbContext context)
+        public CartController(ICartService cartService, AppDbContext context)
         {
+            _cartService = cartService;
             _context = context;
         }
 
         public IActionResult Index()
         {
-            List<CartItem> cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+            var cartItems = _cartService.GetCart();
 
-            return View(cart);
-        }
+            List<CartItemViewModel> cartViewModel = new List<CartItemViewModel>();
 
-        public async Task<IActionResult> Add(int id)
-        {
-            Product product = await _context.Products.FindAsync(id);
-
-            if (product != null)
+            foreach (var item in cartItems)
             {
-                List<CartItem> cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+                var product = _context.Products.Find(item.ProductId);
 
-                CartItem item = cart.FirstOrDefault(c => c.Product.Id == id);
-
-                if (item != null)
+                if (product != null)
                 {
-                    item.Quantity++;
+                    cartViewModel.Add(new CartItemViewModel
+                    {
+                        Product = product,
+                        Quantity = item.Quantity
+                    });
                 }
-                else
-                {
-                    cart.Add(new CartItem { Product = product, Quantity = 1 });
-                }
-
-                HttpContext.Session.SetObjectAsJson("Cart", cart);
             }
 
-            return RedirectToAction("Index", "Home");
+            return View(cartViewModel);
+        }
+
+        [HttpPost]
+        public IActionResult Add(int id)
+        {
+            _cartService.AddToCart(id);
+            return RedirectToAction("Index");
         }
 
         public IActionResult Remove(int id)
         {
-            List<CartItem> cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart");
+            _cartService.RemoveFromCart(id);
+            return RedirectToAction("Index");
+        }
 
-            if (cart != null)
-            {
-                var item = cart.FirstOrDefault(c => c.Product.Id == id);
-                if (item != null)
-                {
-                    cart.Remove(item);
-                    HttpContext.Session.SetObjectAsJson("Cart", cart);
-                }
-            }
+        public IActionResult Clear()
+        {
+            _cartService.Clear();
             return RedirectToAction("Index");
         }
     }

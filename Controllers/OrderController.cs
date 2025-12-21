@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore; 
 using OnlineShop.Data;
-using OnlineShop.DATA;
+using OnlineShop.DATA;               
 using OnlineShop.Helpers;
 using OnlineShop.Models;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace OnlineShop.Controllers
             _context = context;
         }
 
+        [HttpGet]
         public IActionResult Checkout()
         {
             return View();
@@ -37,19 +39,25 @@ namespace OnlineShop.Controllers
             {
                 foreach (var item in cart)
                 {
-                    var orderItem = new OrderItem
-                    {
-                        ProductId = item.Product.Id,
-                        Quantity = item.Quantity,
-                        Price = item.Product.Price
-                    };
-                    order.OrderItems.Add(orderItem);
+                    var product = await _context.Products.FindAsync(item.ProductId);
 
-                    var productInDb = await _context.Products.FindAsync(item.Product.Id);
-                    if (productInDb != null)
+                    if (product != null)
                     {
-                        productInDb.Stock -= item.Quantity;
-                        _context.Update(productInDb);
+                        if (product.Stock < item.Quantity)
+                        {
+                            ModelState.AddModelError("", $"Вибачте, товару '{product.Name}' залишилося лише {product.Stock} шт.");
+                            return View(order);
+                        }
+                        var orderItem = new OrderItem
+                        {
+                            ProductId = product.Id,
+                            Quantity = item.Quantity,
+                            Price = product.Price
+                        };
+                        order.OrderItems.Add(orderItem);
+
+                        product.Stock -= item.Quantity;
+                        _context.Update(product);
                     }
                 }
 

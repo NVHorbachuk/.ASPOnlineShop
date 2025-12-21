@@ -1,5 +1,8 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+@using OnlineShop.Services
+@inject ICartService CartService
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,10 +32,20 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark font-weight-bold" asp-controller="Cart" asp-action="Index">
                                 🛒 Кошик
+                                @{
+                                    var cartItems = CartService.GetCart();
+                                    var totalQuantity = cartItems.Sum(x => x.Quantity);
+                                }
+                                
+                                @if (totalQuantity > 0)
+                                {
+                                    <span class="badge rounded-pill bg-danger ms-1">
+                                        @totalQuantity
+                                    </span>
+                                }
                             </a>
                         </li>
-
-                    </ul>
+                        </ul>
                 </div>
             </div>
         </nav>

@@ -1,4 +1,5 @@
-﻿@model List<OnlineShop.Models.CartItem>
+﻿@using OnlineShop.ViewModels
+@model List<CartItemViewModel>
 
 @{
     ViewData["Title"] = "Кошик";
@@ -25,18 +26,22 @@
                 {
                     <tr>
                         <td class="align-middle">@item.Product.Name</td>
-                        <td class="align-middle">@item.Product.Price.ToString("c")</td>
+                        <td class="align-middle">@item.Product.Price.ToString("N0") €</td>
 
                         <td class="align-middle">
                             <div class="btn-group" role="group">
                                 <a asp-action="Decrease" asp-route-id="@item.Product.Id" class="btn btn-outline-secondary btn-sm font-weight-bold">-</a>
+
                                 <span class="btn btn-light btn-sm disabled" style="color: black; font-weight: bold; width: 40px;">@item.Quantity</span>
-                                <a asp-action="Add" asp-route-id="@item.Product.Id" class="btn btn-outline-secondary btn-sm font-weight-bold">+</a>
+
+                                <form asp-action="Add" asp-route-id="@item.Product.Id" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm font-weight-bold" style="border-radius: 0;">+</button>
+                                </form>
                             </div>
                         </td>
 
                         <td class="align-middle">
-                            @((item.Quantity * item.Product.Price).ToString("c"))
+                            @((item.Quantity * item.Product.Price).ToString("N0")) €
                         </td>
                         <td class="align-middle">
                             <a asp-action="Remove" asp-route-id="@item.Product.Id" class="btn btn-danger btn-sm">Видалити</a>
@@ -48,7 +53,7 @@
                 <tr>
                     <td colspan="3" class="text-end"><b>Всього до сплати:</b></td>
                     <td>
-                        <b style="font-size: 1.2em;">@Model.Sum(x => x.Quantity * x.Product.Price).ToString("c")</b>
+                        <b style="font-size: 1.2em;">@Model.Sum(x => x.Quantity * x.Product.Price).ToString("N0") €</b>
                     </td>
                     <td></td>
                 </tr>
@@ -57,7 +62,6 @@
 
         <div class="text-center mt-4">
             <a asp-controller="Home" asp-action="Index" class="btn btn-primary">⬅ Продовжити покупки</a>
-
             <a asp-controller="Order" asp-action="Checkout" class="btn btn-success btn-lg">Оформити замовлення ✅</a>
         </div>
     }
